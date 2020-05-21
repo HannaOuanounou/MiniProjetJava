@@ -4,6 +4,11 @@ import primitives.Point3D;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
+import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
+
 /**
  *  Cylinder is afinite Tube with a certain _height
  */
@@ -12,6 +17,7 @@ public class Cylinder extends Tube {
     private double _height;
 
     /**
+
      * Cylinder constructor
      *
      * @param _radius
@@ -30,10 +36,32 @@ public class Cylinder extends Tube {
      */
     @Override
     public Vector getNormal(Point3D point) {
-        Point3D o = _ray.getPoint();
-        Vector v = _ray.getDirection();
+        Vector result = null;
+        boolean finished = false;
 
-        return v;
+        Point3D o = _ray.getPoint();
+        Vector v = (Vector) _ray.getDirection();
+
+        // projection of P-O on the ray:
+        double t = 0;
+        try {
+            t = alignZero(point.subtract(o).dotProduct(v));
+        } catch (IllegalArgumentException e) { // P = O
+            result = v;
+            finished = true;
+        }
+        if (!finished) {// if the point is at a base
+            if (t == 0 || isZero(_height - t)) // if it's close to 0, we'll get ZERO vector exception
+            {
+                result = v;
+            } else {
+                o = o.add(v.scale(t));
+                result = point.subtract(o).normalize();
+            }
+
+        }
+
+        return result;
     }
 
     @Override
@@ -43,5 +71,14 @@ public class Cylinder extends Tube {
                 ", _ray=" + _ray +
                 ", _radius=" + _radius +
                 '}';
+    }
+    @Override
+    public List<Point3D> findIntersections(Ray ray)
+    {
+        return super.findIntersections(ray);
+    }
+
+    public double get_height() {
+        return _height;
     }
 }
