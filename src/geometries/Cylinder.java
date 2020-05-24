@@ -72,13 +72,5 @@ public class Cylinder extends Tube {
                 ", _radius=" + _radius +
                 '}';
     }
-    @Override
-    public List<Point3D> findIntersections(Ray ray)
-    {
-        return super.findIntersections(ray);
-    }
-
-    public double get_height() {
-        return _height;
-    }
+    
 }
